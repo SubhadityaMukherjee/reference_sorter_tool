@@ -23,7 +23,9 @@ def main_window():
         ],
     ]
 
-    window = sg.Window("Reference Sorter", file_list_column)
+    window = sg.Window(
+        "Reference Sorter", file_list_column, element_justification="center"
+    )
 
     if os.path.exists("data.pkl"):
         data = load_from_pickle("data.pkl")
@@ -126,7 +128,7 @@ def create_train_window(folder_chosen):
     window = sg.Window("Train selection", file_list_column)
 
     event, values = window.read()
-    mainmodel = MainModel(folder_chosen, int(values["-EPOCHS-"]))
+    mainmodel = MainModel(folder_chosen, 10)
 
     while True:
         event, values = window.read()
@@ -141,7 +143,7 @@ def create_train_window(folder_chosen):
                 sg.Popup(
                     "This might take a minute the first time and needs an internet connection..."
                 )
-                mainmodel.create_model(values["-MODEL-"])
+                mainmodel.create_model(values["-MODEL-"], int(values["-EPOCHS-"]))
                 sg.Popup("Model created")
         elif event == "View model info":
             if mainmodel.model is None:
