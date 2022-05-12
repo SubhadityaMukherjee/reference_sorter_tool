@@ -2,6 +2,7 @@ import PySimpleGUI as sg
 import os.path
 import json
 from .utils import *
+from .aibrain import *
 import os
 import cv2
 from pathlib import Path
@@ -56,6 +57,11 @@ def main_window():
                 sg.Popup("You need to choose a folder first")
             else:
                 view_dataset_info(folder_chosen)
+        elif event == "Train a model":
+            if len(folder_chosen) == 0:
+                sg.Popup("You need to choose a folder first")
+            else:
+                create_train_window(folder_chosen)
         elif event == "Bad Image Cleaner":
             if len(folder_chosen) == 0:
                 sg.Popup("You need to choose a folder first")
@@ -81,6 +87,71 @@ def main_window():
     window.close()
 
     save_to_pickle(data, "data.pkl")
+
+
+def create_train_window(folder_chosen):
+    file_list_column = [
+        [
+            [
+                sg.Text(
+                    "The default options have already been selected for you. You can just hit Train",
+                    size=(80, 1),
+                )
+            ],
+            [
+                sg.Combo(
+                    ["EfficientNet", "Vgg16", "Resnet"],
+                    default_value="EfficientNet",
+                    readonly=True,
+                    key="-MODEL-",
+                )
+            ],
+            [
+                sg.Text("Number of epochs"),
+                sg.InputText(default_text="10", key="-EPOCHS-"),
+            ],
+            [sg.Button("Train the model")],
+            [sg.Button("Update data")],
+            [sg.Button("View previous result")],
+            [sg.HorizontalSeparator()],
+            [sg.Text(text="Advanced options", size=(20, 1), font=("Helvetica", 13))],
+            [sg.Button("View model info")],
+            [sg.HorizontalSeparator()],
+            [sg.Button("Quit")],
+        ],
+    ]
+
+    window = sg.Window("Train selection", file_list_column)
+
+    event, values = window.read()
+    mainmodel = MainModel(folder_chosen, int(values["-EPOCHS-"]))
+
+    while True:
+        event, values = window.read()
+        if event == "Exit" or event == sg.WIN_CLOSED or event == "Quit":
+            break
+        elif event == "Train the model":
+            if len(folder_chosen) == 0:
+
+                # TODO add a check to see if the folder structure is correct
+                sg.Popup("You need to choose a folder first")
+            else:
+                sg.Popup(
+                    "This might take a minute the first time and needs an internet connection..."
+                )
+                mainmodel.create_model(values["-MODEL-"])
+                sg.Popup("Model created")
+        elif event == "View model info":
+            if mainmodel.model is None:
+                sg.Popup("You need to pick a model first")
+            else:
+                # TODO Change this to something more useful
+                sg.Popup(mainmodel.get_model_summary())
+
+        elif event == "View previous result":
+            # TODO create
+            pass
+            # view_previous_result()
 
 
 def create_folder_picker():

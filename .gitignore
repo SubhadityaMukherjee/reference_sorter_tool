@@ -6,6 +6,7 @@ logs
 lightning_logs/*
 lightning_logs
 __pycache__/*
+__pycache__/
 *.pyc
 *.pt
 *.mp4

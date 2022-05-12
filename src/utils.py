@@ -42,22 +42,26 @@ def view_dataset_info(folder):
 def load_images_from_folder(folder, subset=None):
     image_paths = []
     progwindow = progress_bar(0, len(os.listdir(folder)), "Loading images")
-
+    total_files = 0
+    dict_classes = {}
     for index, filename in enumerate(os.listdir(folder)):
         event, values = progwindow.read(timeout=0)
         check_subset = 0
+        temp_count = 0
         for image in os.listdir(os.path.join(folder, filename)):
             if subset is not None and check_subset == subset:
                 break
             else:
                 image_paths.append(os.path.join(folder, filename, image))
                 check_subset += 1
+                temp_count += 1
+        dict_classes[filename] = temp_count
         progwindow["progbar"].update(index)
     progwindow.close()
     file_type = list(set([Path(path).suffix for path in image_paths]))
     file_type = [x for x in file_type if x != ""]
-    classes = " , ".join(os.listdir(folder))
-    return image_paths, file_type[0], classes
+    classes = "\n".join([f"{x}:{dict_classes[x]}" for x in dict_classes.keys()])
+    return image_paths, " , ".join(file_type), classes
 
 
 def bad_image_cleaner(folder, subset=None):
@@ -82,7 +86,12 @@ def bad_image_cleaner(folder, subset=None):
         progwindow["progbar"].update(index)
     progwindow.close()
     if len(image_paths) > 0:
-        sg.Popup("Found {} bad images".format(len(image_paths)))
+        sg.Popup(
+            "Found {} bad images. Saved them to log file.".format(len(image_paths))
+        )
+        # TODO What to do with the bad images? Delete? Or Move to a separate folder?
+        with open("bad_images.txt", "w") as f:
+            f.write("\n".join(image_paths))
     else:
         sg.Popup("No bad images found")
     return image_paths
