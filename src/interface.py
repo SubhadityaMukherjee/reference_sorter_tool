@@ -1,11 +1,13 @@
-import PySimpleGUI as sg
-import os.path
 import json
-from .utils import *
-from .aibrain import *
 import os
-import cv2
+import os.path
 from pathlib import Path
+
+import cv2
+import PySimpleGUI as sg
+
+from .aibrain import *
+from .utils import *
 
 
 def main_window():

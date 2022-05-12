@@ -1,8 +1,9 @@
-import PySimpleGUI as sg
 import os
 import pickle
 from pathlib import Path
+
 import cv2
+import PySimpleGUI as sg
 
 
 def verify_image(img_file):

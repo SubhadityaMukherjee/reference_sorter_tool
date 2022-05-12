@@ -1,22 +1,16 @@
 #!/usr/bin/python3
 # %%
-from pathlib import Path
-import os
 import io
+import os
+from pathlib import Path
 
 import matplotlib.pyplot as plt
 import tensorflow as tf
 from tensorflow import keras
-from tensorflow.keras import layers
-from tensorflow.keras.layers import (
-    Activation,
-    Dense,
-    Dropout,
-    Flatten,
-    GlobalAveragePooling2D,
-)
+from tensorflow.keras import applications, layers
+from tensorflow.keras.layers import (Activation, Dense, Dropout, Flatten,
+                                     GlobalAveragePooling2D)
 from tensorflow.keras.models import Model, Sequential
-from tensorflow.keras import applications
 
 
 # %%
