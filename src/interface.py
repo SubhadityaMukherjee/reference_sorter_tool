@@ -120,6 +120,8 @@ def create_train_window(folder_chosen):
             [sg.HorizontalSeparator()],
             [sg.Text(text="Advanced options", size=(20, 1), font=("Helvetica", 13))],
             [sg.Button("View model info")],
+            [sg.Checkbox("Use GPU", default=True, key="-GPU-")],
+            [sg.Checkbox("Mixed precision", default=True, key="-MXP-")],
             [sg.HorizontalSeparator()],
             [sg.Button("Quit")],
         ],
@@ -128,12 +130,14 @@ def create_train_window(folder_chosen):
     window = sg.Window("Train selection", file_list_column)
 
     event, values = window.read()
-    mainmodel = MainModel(folder_chosen, 10)
+    mainmodel = MainModel(folder_chosen, values["-MXP-"])
 
     while True:
         event, values = window.read()
         if event == "Exit" or event == sg.WIN_CLOSED or event == "Quit":
             break
+        elif event == "Update data":
+            mainmodel.labeler(folder_chosen)
         elif event == "Train the model":
             if len(folder_chosen) == 0:
 
@@ -143,13 +147,13 @@ def create_train_window(folder_chosen):
                 sg.Popup(
                     "This might take a minute the first time and needs an internet connection..."
                 )
-                mainmodel.create_model(values["-MODEL-"], int(values["-EPOCHS-"]))
-                sg.Popup("Model created")
+                mainmodel.create_model(values["-MODEL-"])
+                mainmodel.train_model(values["-EPOCHS-"])
+
         elif event == "View model info":
             if mainmodel.model is None:
                 sg.Popup("You need to pick a model first")
             else:
-                # TODO Change this to something more useful
                 sg.Popup(mainmodel.get_model_summary())
 
         elif event == "View previous result":
