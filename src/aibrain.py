@@ -28,6 +28,8 @@ class MainModel:
         self.folder = folder
         self.image_size: tuple = (128, 128)
         self.num_classes: int = len(os.listdir(folder))
+        self.classes = os.listdir(folder)
+        self.classes.remove("unlabeled")
         # self.epochs = epochs
         self.mxp = mxp
         self.autotune = tf.data.experimental.AUTOTUNE
@@ -127,6 +129,7 @@ class MainModel:
                 seed=1337,
                 image_size=self.image_size,
                 batch_size=self.autotune,
+                # classes = self.classes,
             )
             val_ds = tf.keras.preprocessing.image_dataset_from_directory(
                 str(self.folder),
@@ -135,9 +138,11 @@ class MainModel:
                 seed=1337,
                 image_size=self.image_size,
                 batch_size=self.autotune,
+                # classes = self.classes,
             )
             return train_ds, val_ds
         except Exception as e:
+            print(e)
             # print("Not enough classes in data. Please run the labeler")
             return None, None
 
